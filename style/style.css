@@ -1,0 +1,64 @@
+#install-popup {
+    position: fixed;
+    bottom: -200px;
+    /* Начальная позиция - за пределами экрана */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 300px;
+    background: #f9f9f9;
+    box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.2);
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 10px 10px 0 0;
+    z-index: 1000;
+    opacity: 0;
+    /* Скрываем поп-ап до появления */
+    transition: bottom 1s ease, opacity 1s ease;
+    /* Анимация */
+}
+
+#install-popup.show {
+    bottom: 0;
+    /* Конечная позиция - внизу экрана */
+    opacity: 1;
+    /* Делаем поп-ап видимым */
+}
+
+#install-popup p {
+    margin: 0 0 15px;
+    /* Отступ снизу для разделения с кнопками */
+    font-size: 16px;
+    text-align: center;
+}
+
+#install-popup .buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    /* Центрируем кнопки */
+    width: 100%;
+}
+
+#install-popup button {
+    flex: 1;
+    /* Кнопки будут одинаковой ширины */
+    padding: 10px 15px;
+    font-size: 14px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#install-button {
+    background: #4caf50;
+    color: white;
+}
+
+.close-button {
+    background: #f44336;
+    color: white;
+}
