@@ -1,28 +1,32 @@
 let deferredPrompt; // Событие для запуска системного окна установки
 
-// Перехват события beforeinstallprompt
-window.addEventListener('beforeinstallprompt', (e) => {
-    console.log('Событие beforeinstallprompt сработало'); // Отладочное сообщение
-    e.preventDefault(); // Отключить стандартное всплывающее окно
-    deferredPrompt = e;
-
+// Универсальная функция для отображения поп-апа
+function showInstallPopup() {
     const installPopup = document.getElementById('install-popup');
     if (installPopup) {
-        console.log('Поп-ап найден в DOM. Показываем его.');
-        installPopup.style.display = 'block'; // Показать поп-ап
+        console.log('Показываем поп-ап.');
+        installPopup.style.display = 'block'; // Показываем поп-ап
         installPopup.classList.add('show'); // Добавляем класс для анимации, если есть
     } else {
         console.error('Поп-ап не найден в DOM. Проверьте id="install-popup".');
     }
+}
+
+// Обработчик для события beforeinstallprompt (Chrome и Edge)
+window.addEventListener('beforeinstallprompt', (e) => {
+    console.log('Событие beforeinstallprompt сработало');
+    e.preventDefault(); // Отключаем стандартное всплывающее окно
+    deferredPrompt = e; // Сохраняем событие
+    showInstallPopup(); // Показываем поп-ап
 });
 
-// Обработчик кнопки установки
+// Универсальная обработка кнопки установки
 document.getElementById('install-button').addEventListener('click', () => {
     console.log('Кнопка установки нажата');
     const installPopup = document.getElementById('install-popup');
     if (installPopup) {
-        installPopup.style.display = 'none'; // Скрыть поп-ап
-        installPopup.classList.remove('show'); // Убрать класс анимации
+        installPopup.style.display = 'none'; // Скрываем поп-ап
+        installPopup.classList.remove('show'); // Убираем класс анимации
     }
 
     if (deferredPrompt) {
@@ -35,10 +39,10 @@ document.getElementById('install-button').addEventListener('click', () => {
             } else {
                 console.log('Пользователь отклонил установку');
             }
-            deferredPrompt = null; // Сброс события
+            deferredPrompt = null; // Сбрасываем событие
         });
     } else {
-        console.log('Событие deferredPrompt недоступно');
+        console.log('Событие deferredPrompt недоступно, покажите инструкцию для установки вручную.');
     }
 });
 
@@ -47,30 +51,22 @@ document.querySelector('.close-button').addEventListener('click', () => {
     console.log('Кнопка закрытия нажата');
     const installPopup = document.getElementById('install-popup');
     if (installPopup) {
-        installPopup.style.display = 'none'; // Скрыть поп-ап
-        installPopup.classList.remove('show'); // Убрать класс анимации
+        installPopup.style.display = 'none'; // Скрываем поп-ап
+        installPopup.classList.remove('show'); // Убираем класс анимации
     }
 });
 
-// Проверка загрузки страницы
+// Универсальная проверка для iOS и Firefox
 window.onload = function () {
     console.log('Страница загружена');
-    const installPopup = document.getElementById('install-popup');
-    if (installPopup) {
-        console.log('Поп-ап доступен в DOM');
-    } else {
-        console.error('Поп-ап не найден в DOM. Проверьте наличие элемента с id="install-popup".');
-    }
-};
+    const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent.toLowerCase());
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent.toLowerCase());
 
-
-// Логика отображения для устройств
-window.onload = function () {
-    console.log('Страница загружена');
-    const installPopup = document.getElementById('install-popup');
-    if (installPopup) {
-        console.log('Поп-ап доступен в DOM');
-    } else {
-        console.error('Поп-ап не найден в DOM. Проверьте наличие элемента с id="install-popup".');
+    if (isIos && isSafari) {
+        console.log('Показываем поп-ап для iOS.');
+        showInstallPopup(); // Для iOS показываем поп-ап с инструкцией
+    } else if (!deferredPrompt) {
+        console.log('Показываем поп-ап для других браузеров.');
+        showInstallPopup(); // Показываем поп-ап для браузеров без поддержки beforeinstallprompt
     }
 };
