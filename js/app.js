@@ -1,72 +1,49 @@
-let deferredPrompt; // Событие для запуска системного окна установки
-
-// Универсальная функция для отображения поп-апа
-function showInstallPopup() {
-    const installPopup = document.getElementById('install-popup');
-    if (installPopup) {
-        console.log('Показываем поп-ап.');
-        installPopup.style.display = 'block'; // Показываем поп-ап
-        installPopup.classList.add('show'); // Добавляем класс для анимации, если есть
-    } else {
-        console.error('Поп-ап не найден в DOM. Проверьте id="install-popup".');
-    }
-}
-
-// Обработчик для события beforeinstallprompt (Chrome и Edge)
-window.addEventListener('beforeinstallprompt', (e) => {
-    console.log('Событие beforeinstallprompt сработало');
-    e.preventDefault(); // Отключаем стандартное всплывающее окно
-    deferredPrompt = e; // Сохраняем событие
-    showInstallPopup(); // Показываем поп-ап
-});
-
-// Универсальная обработка кнопки установки
-document.getElementById('install-button').addEventListener('click', () => {
-    console.log('Кнопка установки нажата');
-    const installPopup = document.getElementById('install-popup');
-    if (installPopup) {
-        installPopup.style.display = 'none'; // Скрываем поп-ап
-        installPopup.classList.remove('show'); // Убираем класс анимации
+$(document).ready(function () {
+    // Проверяем ширину экрана
+    function checkScreenWidth() {
+        if ($(window).width() <= 500) {
+            $('#popup').fadeIn().css('bottom', '0');
+            $('#overlay').fadeIn();
+        }
     }
 
-    if (deferredPrompt) {
-        console.log('Показываем системное окно установки');
-        deferredPrompt.prompt(); // Показать системное окно установки
+    // Закрытие окна при нажатии на кнопку закрытия
+    $('#closeButton').click(function () {
+        $('#popup').fadeOut().css('bottom', '-100%');
+        $('#overlay').fadeOut();
+    });
 
-        deferredPrompt.userChoice.then((choiceResult) => {
-            if (choiceResult.outcome === 'accepted') {
-                console.log('Пользователь согласился на установку');
-            } else {
-                console.log('Пользователь отклонил установку');
-            }
-            deferredPrompt = null; // Сбрасываем событие
-        });
-    } else {
-        console.log('Событие deferredPrompt недоступно, покажите инструкцию для установки вручную.');
-    }
-});
+    // Закрытие окна при нажатии на затемненный фон
+    $('#overlay').click(function () {
+        $('#popup').fadeOut().css('bottom', '-100%');
+        $('#overlay').fadeOut();
+    });
 
-// Обработчик кнопки закрытия
-document.querySelector('.close-button').addEventListener('click', () => {
-    console.log('Кнопка закрытия нажата');
-    const installPopup = document.getElementById('install-popup');
-    if (installPopup) {
-        installPopup.style.display = 'none'; // Скрываем поп-ап
-        installPopup.classList.remove('show'); // Убираем класс анимации
-    }
-});
+    // Показ кнопки установки, если браузер поддерживает PWA
+    let deferredPrompt;
+    const installButton = document.getElementById('install-button');
+    window.addEventListener('beforeinstallprompt', (e) => {
+        deferredPrompt = e;
+        installButton.style.display = 'block'; // Показываем кнопку установки
+    });
 
-// Универсальная проверка для iOS и Firefox
-window.onload = function () {
-    console.log('Страница загружена');
-    const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent.toLowerCase());
-    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent.toLowerCase());
+    installButton.addEventListener('click', () => {
+        if (deferredPrompt) {
+            deferredPrompt.prompt(); // Запрашиваем установку
+            deferredPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    console.log('PWA installed');
+                } else {
+                    console.log('PWA installation dismissed');
+                }
+                deferredPrompt = null;
+            });
+        }
+    });
 
-    if (isIos && isSafari) {
-        console.log('Показываем поп-ап для iOS.');
-        showInstallPopup(); // Для iOS показываем поп-ап с инструкцией
-    } else if (!deferredPrompt) {
-        console.log('Показываем поп-ап для других браузеров.');
-        showInstallPopup(); // Показываем поп-ап для браузеров без поддержки beforeinstallprompt
-    }
-};
+    // Проверяем ширину экрана при загрузке страницы и при изменении размера окна
+    checkScreenWidth();
+    $(window).resize(function () {
+        checkScreenWidth();
+    });
+})
