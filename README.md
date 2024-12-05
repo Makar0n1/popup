@@ -96,14 +96,14 @@ if ('serviceWorker' in navigator) {
 >public/widget
 
 В эту папку переместите следующие файлы:
->pwa.css — стили виджета.
->pwa2.js — кеширование по URL для PWA.
->app-pwa-pop-up.js — логика Pop-Up и deferredPrompt для PWA.
->jquery-3.7.1.min.js — библиотека jQuery.
->register-service-worker.js — регистрация сервис-воркера.
->screenify-logo-min.png — логотип для Pop-Up.
->screenify192.png - иконки для манифеста.
->screenify512.png - иконки для манифеста.
+* pwa.css — стили виджета.
+* pwa2.js — кеширование по URL для PWA.
+* app-pwa-pop-up.js — логика Pop-Up и deferredPrompt для PWA.
+* jquery-3.7.1.min.js — библиотека jQuery.
+* register-service-worker.js — регистрация сервис-воркера.
+* screenify-logo-min.png — логотип для Pop-Up.
+* screenify192.png - иконки для манифеста.
+* screenify512.png - иконки для манифеста.
 
 В папку public кидаем manifest-pwa.json и смотрим внимательно, все ли пути правильно указаны, в противном случае beforeinstallprompt срабатывать не будет.
 ```
