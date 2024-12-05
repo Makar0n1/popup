@@ -412,3 +412,8 @@ class App extends Component {
 export default App;
 
 ```
+### 5. Запуск проекта
+
+>npm i
+
+>npm start
